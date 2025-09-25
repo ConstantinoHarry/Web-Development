@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let updateInterval = null;  // Interval for updating stock prices
 
     // Financial Modeling Prep API 
-    const API_KEY = 'quMs7bPlpU8a53b7MFP2RwWxJYc8QQAa';  // API key for Financial Modeling Prep
+    const API_KEY = 'API-KEY';  // API key for Financial Modeling Prep
     const API_BASE_URL = 'https://financialmodelingprep.com/api/v3/quote/';  // Base URL for fetching stock quotes
     const HISTORICAL_API_URL = 'https://financialmodelingprep.com/api/v3/historical-price-full/';  // URL for fetching historical stock data
 
