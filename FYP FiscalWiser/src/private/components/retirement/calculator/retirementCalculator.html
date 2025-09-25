@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiscalWiser-Retirement Calculator </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!--Nav Bar Styles-->
+    <link rel="stylesheet" href="/src/private/components/navBar-styles.css"> 
+    <!-- Styles for retirement calculator-->
+    <link rel="stylesheet" href="/src/private/components/retirement/calculator /retirementCalculator.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+   
+
+ <!-- Navbar -->
+ <nav class="navbar">
+    <div class="navbar__container">
+        <!-- Logo -->
+        <a href="#" id="navbar__logo">
+            <i class="fas fa-gem"></i> Fiscal Wiser
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="navbar__toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <!-- Navbar Menu -->
+        <ul class="navbar__menu">
+            <li class="navbar__item">
+                <a href="/src/private/components/dashboard /dashboard.html" class="navbar__links">Home</a>
+            </li>
+            <li class="navbar__item">
+                <a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement
+                     <i class="fas fa-caret-down"></i></a>
+
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
+                </ul>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/paperTrading/stocks/stock-ticker.html" class="navbar__links">Paper Trading
+                     <i class="fas fa-caret-down"></i></a>
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
+                    <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End of Navbar -->
+
+<!-- Main Content -->
+  <!-- Retirement Calculator Section -->
+<div class="calculator-container">
+    <div class="calculator">
+        <!-- Title Card -->
+        <div class="card title-card">
+            <h1>Your Retirement Planning Calculator</h1> 
+            <h2>Discover exactly how much you need to save each month for a comfortable retirement,
+                 with personalized projections that account for inflation and investment growth.</h2>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="calculator-main">
+            <!-- Form Card -->
+            <div class="card form-card">
+                <div class="calculator__form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="number" id="currentAge" placeholder="Enter your current age" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="number" id="retirementAge" placeholder="Enter your retirement age" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-wallet"></i>
+                        <input type="number" id="monthlyExpenses" placeholder="Enter monthly expenses during retirement" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-chart-line"></i>
+                        <input type="number" id="inflationRate" placeholder="Enter annual inflation rate (%)" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-coins"></i>
+                        <input type="number" id="investmentReturn" placeholder="Enter expected annual return on investments (%)" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-piggy-bank"></i>
+                        <input type="number" id="currentSavings" placeholder="Enter current savings" required>
+                    </div>
+
+                    <button id="calculateButton" class="btn-primary">
+                        <i class="fas fa-calculator"></i> Calculate
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card results-card">
+                <div class="calculator__result">
+                    <div id="retirementChart-container" style="height: 400px; width: 100%">
+                        <canvas id="retirementChart"></canvas>
+                    </div>
+                    <!-- rest of your results container -->
+
+                   <!-- Calculation Results -->
+                   <div class="results-container">
+                       <div class="result-item">
+                           <h2>Retirement Savings Needed:</h2>
+                           <p id="result">$0.00</p>
+                       </div>
+                       <div class="result-item">
+                           <h2>Monthly Savings Required:</h2>
+                           <p id="monthlySavings">$0.00</p>
+                       </div>
+                       <div class="result-item">
+                           <h2>Yearly Savings Required:</h2>
+                           <p id="yearlySavings">$0.00</p>
+                       </div>
+                   </div>
+               </div>
+            </div>
+        </div>
+
+        <!-- Actions Card -->
+        <div class="card actions-card">
+            <div class="fp-section-actions">
+                <button class="btn-secondary" id="appendRetirementInfo">Add Retirement Info</button>
+                <div class="addRetirementInfoMessage">
+                    This will add your retirement info to the dashboard and allows you to track its progress.
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- End of Main Content -->
+
+    <!-- Script -->
+
+    <!--Script for NavBar-->
+    <script src="/src/private/components/app.js"></script>
+    <!--Script for Retirement Calculator-->
+    <script src="/src/private/components/retirement/calculator /retirementCalculator.js"></script>
+</body>
+</html>

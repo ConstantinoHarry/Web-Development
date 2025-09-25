@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiscalWiser-Stock Trading Simulator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Styles for stock trading simulator-->
+    <link rel="stylesheet" href="/src/private/components/paperTrading/stocks/stock-ticker-styles.css">
+    <!--Styles for Nav Bar-->
+    <link rel="stylesheet" href="/src/private/components/navBar-styles.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head> 
+<body>
+      <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+        <!-- Logo -->
+        <a href="#" id="navbar__logo">
+            <i class="fas fa-gem"></i> Fiscal Wiser
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="navbar__toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <!-- Navbar Menu -->
+        <ul class="navbar__menu">
+            <li class="navbar__item">
+                <a href="/src/private/components/dashboard /dashboard.html" class="navbar__links">Home</a>
+            </li>
+            <li class="navbar__item">
+                <a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement
+                     <i class="fas fa-caret-down"></i></a>
+
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
+                </ul>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="#" class="navbar__links">Paper Trading
+                     <i class="fas fa-caret-down"></i></a>
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
+                    <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End of Navbar -->
+    <!-- Main Content -->
+    <div class="container">
+        <header>
+            <h1>Stock Trading Simulator</h1>
+            <div class="balance-container">
+                <span id = "message"> Your Trading Balance:</span>
+                <span id="balance">$10,000.00</span>
+                <button id="reset-balance" class="btn-small">Reset</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="stock-symbol" placeholder="Enter stock symbol (e.g. AAPL)" autocomplete="off">
+                    <button id="search-btn" class="btn">Search</button>
+                </div>
+                <div class="initial-balance">
+                    <label for="initial-balance">Starting Balance:</label>
+                    <input type="number" id="initial-balance" value="10000" min="100" step="100">
+                </div>
+            </div>
+
+            <div class="stock-info" id="stock-info" style="display: none;">
+                <h2 id="stock-name"></h2>
+                <div class="price-info">
+                    <div class="price-display">
+                        <span class="price" id="current-price">$0.00</span>
+                        <span class="change" id="price-change">+0.00 (0.00%)</span>
+                    </div>
+                    <div class="price-history">
+                        <div><span>Open:</span> <span id="open-price">$0.00</span></div>
+                        <div><span>High:</span> <span id="high-price">$0.00</span></div>
+                        <div><span>Low:</span> <span id="low-price">$0.00</span></div>
+                        <div><span>Prev Close:</span> <span id="prev-close">$0.00</span></div>
+                    </div>
+                </div>
+                
+                <!-- Chart Container -->
+                <div id="chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+
+                <!-- Chart Controls -->
+                <div class="chart-controls">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-timeframe="1D">1D</button>
+                        <button class="timeframe-btn" data-timeframe="5D">5D</button>
+                        <button class="timeframe-btn" data-timeframe="1M">1M</button>
+                        <button class="timeframe-btn" data-timeframe="6M">6M</button>
+                        <button class="timeframe-btn" data-timeframe="1Y">1Y</button>
+                        <button class="timeframe-btn" data-timeframe="5Y">5Y</button>
+                        <button class="timeframe-btn" data-timeframe="ALL">ALL</button>
+                    </div>
+                </div>
+
+                
+                <div class="trade-actions">
+                    <input type="number" id="shares-amount" placeholder="Shares" min="1" value="1">
+                    <button id="buy-btn" class="btn btn-buy">Buy</button>
+                    <button id="sell-btn" class="btn btn-sell" disabled>Sell</button>
+                </div>
+            </div>
+
+            <div class="portfolio-section">
+                <h2>Your Portfolio</h2>
+                <div class="portfolio-value">
+                    <span>Portfolio Value:</span>
+                    <span id="portfolio-value">$10,000.00</span>
+                </div>
+                
+                <!-- Portfolio Chart Container -->
+                <div class="chart-container">
+                    <canvas id="portfolioChart" width="400" height="200"></canvas>
+                </div>
+                
+                <!-- -->
+                <div class="portfolio-table-container">
+                    <table id="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Shares</th>
+                                <th>Last Price</th>
+                                <th>Change</th>
+                                <th>Equity</th>
+                                <th>Today's Return</th>
+                                <th>Total Return</th>
+                                <th>24h Change</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-body">
+                            <!-- Portfolio items will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!--  -->
+            </div>
+        </div>
+    </div>
+    <!-- End of main content -->
+
+  
+    <!-- Sell Modal -->
+<div id="sellModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Sell Shares of <span id="modalStockSymbol"></span></h3>
+    <div class="modal-body">
+      <p>You own <span id="ownedShares"></span> shares</p>
+      <div class="form-group">
+        <label for="sellSharesAmount">Quantity to Sell:</label>
+        <input type="number" id="sellSharesAmount" min="1" value="1">
+      </div>
+      <div class="modal-actions">
+        <button id="confirmSellBtn" class="btn">Confirm Sell</button>
+        <button id="cancelSellBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+
+    <!-- Script for stock trading simulator-->
+    <script src="/src/private/components/paperTrading/stocks/stock-ticker.js"></script>
+
+    <!-- Script for Nav Bar -->
+    <script src="/src/private/components/app.js"></script>
+    
+
+
+</body>
+</html>

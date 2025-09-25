@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiscal Wiser Money Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Styles for Income and Expense Tracking-->
+    <link rel="stylesheet" href="/src/private/components/transactions /incomeExpenseTracking-styles.css">
+    <!-- Styles for Nav Bar-->
+    <link rel="stylesheet" href="/src/private/components/navBar-styles.css">
+</head>
+  
+    <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+        <!-- Logo -->
+        <a href="#" id="navbar__logo">
+            <i class="fas fa-gem"></i> Fiscal Wiser
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="navbar__toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <!-- Navbar Menu -->
+        <ul class="navbar__menu">
+            <li class="navbar__item">
+                <a href="/src/private/components/dashboard /dashboard.html" class="navbar__links">Home</a>
+            </li>
+            <li class="navbar__item">
+                <a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement
+                     <i class="fas fa-caret-down"></i></a>
+
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
+                </ul>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/paperTrading/stocks/stock-ticker.html" class="navbar__links">Paper Trading
+                     <i class="fas fa-caret-down"></i></a>
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
+                    <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End of Navbar -->
+
+    <!-- Main Content -->   
+ 
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-wallet"></i> Money Tracker</h1>
+                <div class="header-actions">
+                    <div class="date-display" id="current-date"></div>
+                    <button class="action-btn" id="settings-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="overview-tab">
+                <i class="fas fa-chart-pie"></i> Overview
+            </button>
+            <button class="tab-btn" id="income-tab">
+                <i class="fas fa-money-bill-wave"></i> Income
+            </button>
+            <button class="tab-btn" id="expense-tab">
+                <i class="fas fa-shopping-cart"></i> Expenses
+            </button>
+        </div>
+
+        <div class="content-area">
+            <!-- Overview Section -->
+            <div class="tab-content active" id="overview-content">
+                <div class="summary-cards">
+                    <div class="summary-card balance">
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Current Balance</h3>
+                            <div class="metric-value" id="current-balance">$0.00</div>
+                            <div class="trend-indicator positive">
+                                <i class="fas fa-arrow-up"></i> 12% from last month
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-stats">
+                        <div class="summary-stat income">
+                            <h4>Total Income</h4>
+                            <div class="metric-value" id="total-income">$0.00</div>
+                        </div>
+                        <div class="summary-stat expense">
+                            <h4>Total Expenses</h4>
+                            <div class="metric-value" id="total-expense">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-container">
+                    <div class="metric-card income">
+                        <div class="metric-header">
+                            <h3><i class="fas fa-money-bill-trend-up"></i> Income Breakdown</h3>
+                            <div class="card-actions">
+                                <button class="filter-btn active" data-time="month">This Month</button>
+                                <button class="filter-btn" data-time="all">All Time</button>
+                            </div>
+                        </div>
+
+                        
+                        <div class="metric-content">
+                            <div class="transactions-container">
+                                <div class="filter-controls">
+                                    <select id="income-category-filter" class="modern-select">
+                                        <option value="all">All Categories</option>
+                                        <option value="salary">Salary</option>
+                                        <option value="freelance">Freelance</option>
+                                        <option value="investment">Investment</option>
+                                        <option value="gift">Gift</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <select id="income-time-period" class="modern-select">
+                                        <option value="all">All Time</option>
+                                        <option value="current-month">Current Month</option>
+                                        <option value="last-month">Last Month</option>
+                                        <option value="current-year">This Year</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                    <div id="income-custom-range" class="custom-range-picker" style="display: none;">
+                                        <input type="date" id="income-start-date" class="modern-select">
+                                        <span>to</span>
+                                        <input type="date" id="income-end-date" class="modern-select">
+                                    </div>
+                                </div>
+                                <ul class="transactions-list" id="income-transactions">
+                                    <!-- Income transactions will be dynamically inserted here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                    <div class="metric-card expense">
+                        <div class="metric-header">
+                            <h3><i class="fas fa-chart-line-down"></i> Expense Breakdown</h3>
+                            <div class="card-actions">
+                                <button class="filter-btn active" data-time="month">This Month</button>
+                                <button class="filter-btn" data-time="all">All Time</button>
+                            </div>
+                        </div>
+                        <div class="metric-content">
+                            <div class="transactions-container">
+                                <div class="filter-controls">
+                                    <select id="expense-category-filter" class="modern-select">
+                                        <option value="all">All Categories</option>
+                                        <option value="housing">Housing</option>
+                                        <option value="food">Food</option>
+                                        <option value="transportation">Transportation</option>
+                                        <option value="entertainment">Entertainment</option>
+                                        <option value="health">Health</option>
+                                        <option value="education">Education</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <select id="expense-time-period" class="modern-select">
+                                        <option value="all">All Time</option>
+                                        <option value="current-month">Current Month</option>
+                                        <option value="last-month">Last Month</option>
+                                        <option value="current-year">This Year</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                    <div id="expense-custom-range" class="custom-range-picker" style="display: none;">
+                                        <input type="date" id="expense-start-date" class="modern-select">
+                                        <span>to</span>
+                                        <input type="date" id="expense-end-date" class="modern-select">
+                                    </div>
+                                </div>
+                                <ul class="transactions-list" id="expense-transactions">
+                                    <!-- Expense transactions will be dynamically inserted here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Income Section -->
+            
+            <div class="tab-content" id="income-content">
+                <div class="form-section">
+
+                    <!-- Income metrics for income logging -->
+                    <div class="form-container card">
+                        <h2><i class="fas fa-plus-circle"></i> Add New Income</h2>
+                        <form id="income-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="income-amount">Amount</label>
+                                    <div class="input-with-icon">
+                                        <span class="input-prefix"></span>
+                                        <input type="number" id="income-amount" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="income-date">Date</label>
+                                    <div class="input-with-icon">
+                                        <i class="far fa-calendar"></i>
+                                        <input type="date" id="income-date" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="income-description">Description</label>
+                                <input type="text" id="income-description" placeholder="Salary, Bonus, etc." required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="income-category">Category</label>
+                                <div class="category-selector">
+                                    <select id="income-category" required>
+                                        <option value="" disabled selected>Select category</option>
+                                        <option value="salary">Salary</option>
+                                        <option value="freelance">Freelance</option>
+                                        <option value="investment">Investment</option>
+                                        <option value="gift">Gift</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn primary">
+                                <i class="fas fa-check"></i> Add Income
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- End of income metrics for Income logging -->
+
+                    <!-- Recent income transactions -->
+                    <div class="recent-transactions card">
+                        <h3><i class="fas fa-history"></i> Recent Income</h3>
+                        <ul class="transactions-list" id="recent-income">
+                            <!-- Recent income transactions will be dynamically inserted here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--End of Income section for income section -->
+
+
+            <!-- Expense Section -->
+           
+            <div class="tab-content" id="expense-content">
+                <div class="form-section">
+
+                    <!-- Expense metrics for expense logging -->
+                    <div class="form-container card">
+                        <h2><i class="fas fa-plus-circle"></i> Add New Expense</h2>
+                        <form id="expense-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="expense-amount">Amount</label>
+                                    <div class="input-with-icon">
+                                        <span class="input-prefix"></span>
+                                        <input type="number" id="expense-amount" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expense-date">Date</label>
+                                    <div class="input-with-icon">
+                                        <i class="far fa-calendar"></i>
+                                        <input type="date" id="expense-date" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expense-description">Description</label>
+                                <input type="text" id="expense-description" placeholder="Dinner, Rent, etc." required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expense-category">Category</label>
+                                <div class="category-selector">
+                                    <select id="expense-category" required>
+                                        <option value="" disabled selected>Select category</option>
+                                        <option value="housing">Housing</option>
+                                        <option value="food">Food</option>
+                                        <option value="transportation">Transportation</option>
+                                        <option value="entertainment">Entertainment</option>
+                                        <option value="health">Health</option>
+                                        <option value="education">Education</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn danger">
+                                <i class="fas fa-check"></i> Add Expense
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- End of expense metrics for Expense logging -->
+                    
+                    <!-- Recent expense transactions -->
+                    <div class="recent-transactions card">
+                        <h3><i class="fas fa-history"></i> Recent Expenses</h3>
+                        <ul class="transactions-list" id="recent-expenses">
+                            <!-- Recent expense transactions will be dynamically inserted here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- End Expense Section -->
+
+        </div>
+    </div>
+
+    <!-- Modal for Editing Transactions -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Transaction</h2>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group">
+                    <label for="edit-type">Type</label>
+                    <select id="edit-type" required>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-amount">Amount</label>
+                    <input type="number" id="edit-amount" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-description">Description</label>
+                    <input type="text" id="edit-description" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-category">Category</label>
+                    <select id="edit-category" required>
+                        <option value="salary">Salary</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="investment">Investment</option>
+                        <option value="gift">Gift</option>
+                        <option value="other">Other</option>
+                        <option value="housing">Housing</option>
+                        <option value="food">Food</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="health">Health</option>
+                        <option value="education">Education</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-date">Date</label>
+                    <input type="date" id="edit-date" required>
+                </div>
+                
+                <button type="submit" class="btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- End of Modal -->
+     <!-- End of main content -->
+
+     <!-- Script-->
+
+     <!--Script of Income and Expense Tracking-->
+    <script src="/src/private/components/transactions /incomeExpenseTracking.js"></script>
+    <!--Script for Nav Bar-->
+    <script src="/src/private/components/app.js"></script>
+</body>
+</html>

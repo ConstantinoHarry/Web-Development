@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiscal Wiser Retirement Plan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!--Styles for retirement plan -->
+    <link rel="stylesheet" href="/src/private/components/retirement/Overview /retirementOverview-styles.css">
+    <!--Styles for Nav Bar-->
+    <link rel="stylesheet" href="/src/private/components/navBar-styles.css">
+    </head>
+    
+   <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+        <!-- Logo -->
+        <a href="#" id="navbar__logo">
+            <i class="fas fa-gem"></i> Fiscal Wiser
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="navbar__toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <!-- Navbar Menu -->
+        <ul class="navbar__menu">
+            <li class="navbar__item">
+                <a href="/src/private/components/dashboard /dashboard.html" class="navbar__links">Home</a>
+            </li>
+            <li class="navbar__item">
+                <a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement
+                     <i class="fas fa-caret-down"></i></a>
+
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
+                </ul>
+            </li>
+            <li class="navbar__item dropdown">
+                <a href="/src/private/components/paperTrading/stocks/stock-ticker.html" class="navbar__links">Paper Trading
+                     <i class="fas fa-caret-down"></i></a>
+                <!-- Dropdown Menu -->
+                <ul class="dropdown-menu">
+                    <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
+                    <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End of Navbar -->
+
+<body>
+
+    <div class="retirement-page">
+        <!-- Main Content -->
+        <main class="retirement-main-content">
+            <div class="retirement-container">
+
+                <!-- Retirement Section -->
+                <section class="retirement-section">
+                    <div class="retirement-header">
+                        <div class="header-content">
+                            <h2 class="section-title">
+                                <i class="fas fa-piggy-bank section-icon"></i>
+                                Retirement Planning
+                            </h2>
+                            <p class="section-description">Track your retirement savings to meet your retirement needs</p>
+                        </div>
+                        <div class="section-actions">
+                            <!-- Action buttons can be added here if needed -->
+                        </div>
+                    </div>
+
+                    <!-- Retirement Overview Cards -->
+                    <div class="retirement-overview">
+                        <div class="metrics-grid">
+                            <div class="metric-card highlight">
+                                <div class="card-header">
+                                    <h3 class="card-title">Current Retirement Balance</h3>
+                                    <i class="fas fa-wallet metric-icon"></i>
+                                </div>
+                                <div class="card-value" id="currentBalance">$0.00</div>
+                                <div class="card-change">
+                                    <span class="change-positive">+2.5%</span> from last month
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Retirement Savings Needed</h3>
+                                    <i class="fas fa-bullseye metric-icon"></i>
+                                </div>
+                                <div class="card-value" id="retirementSavings">$0.00</div>
+                                <div class="card-note">Based on your retirement goals</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Monthly Contributions</h3>
+                                    <i class="fas fa-calendar-alt metric-icon"></i>
+                                </div>
+                                <div class="card-value" id="monthlyContributions">$0.00</div>
+                                <div class="card-note">Required to meet your goal</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Yearly Contributions</h3>
+                                    <i class="fas fa-chart-line metric-icon"></i>
+                                </div>
+                                <div class="card-value" id="yearlyContributions">$0.00</div>
+                                <div class="card-note">Annual savings target</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Retirement Visualization -->
+                    <div class="retirement-visualization">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-area"></i> Retirement Projection
+                                </h3>
+                                <div class="chart-actions">
+                                    <!-- Chart action buttons can be added here -->
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <div class="chart-placeholder" id="retirementChartContainer">
+                                    <canvas id="retirementGrowthChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Projection Details Below Chart -->
+                            <div class="projection-details">
+                                <div class="details-card">
+                                    <h4><i class="fas fa-info-circle"></i> Projection Details</h4>
+                                    <ul class="details-list">
+                                        <li>
+                                            <span class="detail-label">Current Age:</span>
+                                            <span class="detail-value" id="currentAgeDetail">30</span>
+                                        </li>
+                                        <li>
+                                            <span class="detail-label">Retirement Age:</span>
+                                            <span class="detail-value" id="retirementAgeDetail">65</span>
+                                        </li>
+                                        <li>
+                                            <span class="detail-label">Years Until Retirement:</span>
+                                            <span class="detail-value" id="yearsUntilRetirement">35</span>
+                                        </li>
+                                        <li>
+                                            <span class="detail-label">Life Expectancy:</span>
+                                            <span class="detail-value" id="lifeExpectancyDetail">85</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- End of retirement Overview section -->
+
+                <!-- Start of retirement Accounts section -->
+
+                <!-- Retirement Accounts Section -->
+<section class="retirement-accounts-section">
+    <div class="retirement-header">
+        <div class="header-content">
+            <h2 class="section-title">
+                <i class="fas fa-landmark section-icon"></i>
+                Retirement Accounts
+            </h2>
+            <p class="section-description">Manage your retirement accounts and see how they contribute to your goal</p>
+        </div>
+        <div class="section-actions">
+            <button id="addAccountBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Account
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add Retirement Account</h3>
+            <form id="accountForm">
+                <div class="form-group">
+                    <label for="accountType">Account Type</label>
+                    <select id="accountType" class="form-control" required>
+                        <option value="">Select account type</option>
+                        <option value="mpf">Hong Kong MPF</option>
+                        <option value="ira">IRA</option>
+                        <option value="401k">401(k)</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountName">Account Name</label>
+                    <input type="text" id="accountName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountBalance">Current Balance (HKD)</label>
+                    <input type="number" id="accountBalance" class="form-control" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monthlyContribution">Monthly Contribution (HKD)</label>
+                    <input type="number" id="monthlyContribution" class="form-control" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="growthRate">Expected Annual Growth Rate (%)</label>
+                    <input type="number" id="growthRate" class="form-control" min="0" max="30" step="0.1" required>
+                </div>
+                
+                <!-- Employer Match Field (Hidden by default) -->
+                <div id="employerMatchGroup" class="form-group" style="display: none;">
+                    <label for="employerMatch">Employer Match (%)</label>
+                    <input type="number" id="employerMatch" class="form-control" min="5" max="100" step="0.1" value="5" required>
+                    <small class="form-hint">Hong Kong law requires minimum 5% employer contribution for MPF</small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Accounts Progress -->
+    <div class="accounts-progress">
+        <h3><i class="fas fa-tasks"></i> Contribution to Retirement Goal</h3>
+        <div class="progress-container">
+            <div class="progress-bar" id="retirementProgressBar">
+                <div class="progress-fill" id="retirementProgressFill"></div>
+            </div>
+            <div class="progress-text" id="retirementProgressText">0% of goal reached</div>
+        </div>
+    </div>
+
+    <!-- Accounts Grid -->
+    <div class="accounts-grid" id="accountsGrid">
+        <!-- Accounts will be dynamically inserted here -->
+        <div class="no-accounts">
+            <i class="fas fa-landmark"></i>
+            <p>No retirement accounts added yet</p>
+        </div>
+    </div>
+
+    <!-- Account Projections -->
+    <div class="account-projections">
+        <h3><i class="fas fa-chart-line"></i> Account Projections</h3>
+        <div class="projection-chart-container">
+            <canvas id="accountProjectionChart"></canvas>
+        </div>
+    </div>
+</section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js for the retirement chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JavaScript for the retirement overview -->
+    <script src="/src/private/components/retirement/Overview /retirementOverview.js"></script>
+    <!-- JavaScript for Nav Bar -->
+     <script src = "/src/private/components/app.js"></script>
+</body>
+</html>

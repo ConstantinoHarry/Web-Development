@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fiscal Wiser — Crypto Paper Trading Simulator</title>
+
+  <!-- Keep your existing external styles if needed -->
+  <link rel="stylesheet" href="/src/private/components/navBar-styles.css" />
+  <link rel="stylesheet" href="/src/private/components/paperTrading/crypto/crypto-paper-trade-styles.css" />
+
+  <!-- Icons + Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+  
+
+  <!-- New enhanced styles (link your CSS file below instead if preferred) -->
+  <link rel="stylesheet" href="crypto-paper-trade-enhanced.css" />
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" aria-label="Primary">
+    <div class="navbar__container">
+      <a href="#" id="navbar__logo" aria-label="Fiscal Wiser home">
+        <i class="fas fa-gem"></i> Fiscal Wiser
+      </a>
+
+      <div class="navbar__toggle" id="mobile-menu" aria-label="Open menu" aria-expanded="false" role="button" tabindex="0">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </div>
+
+      <ul class="navbar__menu" role="menubar">
+        <li class="navbar__item"><a href="/src/private/components/dashboard /dashboard.html" class="navbar__links">Home</a></li>
+        <li class="navbar__item"><a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a></li>
+        <li class="navbar__item dropdown">
+          <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
+          </ul>
+        </li>
+        <li class="navbar__item dropdown">
+          <a href="/src/private/components/paperTrading/stocks/stock-ticker.html" class="navbar__links">Paper Trading <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
+            <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1><i class="fas fa-chart-line"></i> Crypto Paper Trading</h1>
+
+        <div class="balance-container" role="status" aria-live="polite">
+          <div class="balance-display">
+            <span class="balance-label">Trading Balance</span>
+            <span id="balance" class="balance-amount">$10,000.00</span>
+
+            <span class="portlfioOverview-label">Portfolio</span>
+            <span id="header-portfolio-value" class="portfolio-amount">$0.00</span>
+
+            <span class="networth-chip" title="Balance + Portfolio">
+              <i class="fa-solid fa-circle-dollar-to-slot"></i>
+              Net worth:
+              <strong id="networth-chip">$10,000.00</strong>
+            </span>
+          </div>
+
+          <div class="profit-indicator">
+            <span id="profit-change" class="positive"><i class="fa-solid fa-arrow-trend-up"></i> +0.00%</span>
+            <span id="profit-amount"><i class="fa-regular fa-circle"></i> +$0.00</span>
+            <button id="reset-btn" class="action-btn" title="Reset portfolio and balance">Reset Portfolio</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Main sections">
+        <button class="tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
+        <button class="tab" data-tab="trade" role="tab" aria-selected="false">Trade</button>
+        <button class="tab" data-tab="portfolio" role="tab" aria-selected="false">Portfolio</button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <!-- Market Tab -->
+      <div class="tab-content active" id="market-tab" role="tabpanel" aria-labelledby="Market">
+        <div class="market-section">
+          <div class="search-container">
+            <div class="search-input">
+              <i class="fas fa-search" aria-hidden="true"></i>
+              <input type="text" id="search-crypto" placeholder="Search cryptocurrencies..." aria-label="Search cryptocurrencies" />
+            </div>
+
+            <div class="filter-options" role="group" aria-label="Market filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="gainers">Gainers</button>
+              <button class="filter-btn" data-filter="losers">Losers</button>
+            </div>
+
+            <button id="refresh-btn" class="refresh-btn" title="Refresh prices">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+
+            <div class="quick-stats" aria-hidden="true">
+              <div class="qs-card"><span>Assets listed</span><strong id="qs-assets">—</strong></div>
+              <div class="qs-card"><span>Top gainer</span><strong id="qs-gainer">—</strong></div>
+              <div class="qs-card"><span>Top loser</span><strong id="qs-loser">—</strong></div>
+              <div class="qs-card"><span>Mkt cap BTC</span><strong id="qs-btcmcap">—</strong></div>
+            </div>
+          </div>
+
+          <div class="crypto-table-container" aria-live="polite">
+            <table id="crypto-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>24h</th>
+                  <th>Market Cap</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="crypto-table-body">
+                <!-- Your JS fills this -->
+                <!-- Optional skeleton rows show while loading -->
+                <tr>
+                  <td colspan="6">
+                    <div class="skeleton-row">
+                      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+                      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+                    </div>
+                    <div class="skeleton-row">
+                      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+                      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portfolio Tab -->
+      <div class="tab-content" id="portfolio-tab" role="tabpanel" aria-labelledby="Portfolio">
+        <div class="portfolio-section">
+          <div class="portfolio-summary">
+            <div class="summary-card">
+              <h3>Portfolio Total Value</h3>
+              <span id="summary-portfolio-value" class="portfolio-amount">$0.00</span>
+            </div>
+            <div class="summary-card">
+              <h3>Total Profit/Loss</h3>
+              <span class="summary-value" id="total-pl">$0.00</span>
+            </div>
+            <div class="summary-card">
+              <h3>24h % Change</h3>
+              <span class="summary-value" id="daily-change">0.00%</span>
+            </div>
+          </div>
+
+          <div class="portfolio-table-container">
+            <table id="portfolio-table">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Holdings</th>
+                  <th>Avg Price</th>
+                  <th>Price</th>
+                  <th>Value</th>
+                  <th>P/L</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="portfolio-table-body">
+                <tr><td colspan="7" class="empty-state">Your portfolio is empty</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Tab -->
+      <div class="tab-content" id="trade-tab" role="tabpanel" aria-labelledby="Trade">
+        <div class="trade-section">
+          <div class="trade-form-container">
+            <!-- Left column: Chart panel and order summary -->
+            <div class="trade-left-column">
+              <!-- Chart panel -->
+              <div class="chart-panel">
+                <div class="chart-header">
+                  <div class="chart-title">
+                    <i class="fa-solid fa-chart-area"></i>
+                    <span id="chart-asset-label">—</span>
+                  </div>
+                  <div class="chart-ranges" role="tablist" aria-label="Price range">
+                    <button type="button" class="chart-range-btn active" data-range="1">24h</button>
+                    <button type="button" class="chart-range-btn" data-range="7">7d</button>
+                    <button type="button" class="chart-range-btn" data-range="30">30d</button>
+                    <button type="button" class="chart-range-btn" data-range="365">1y</button>
+                  </div>
+                </div>
+                <div class="chart-canvas-container">
+                  <canvas id="asset-chart" aria-label="Asset price chart" role="img"></canvas>
+                </div>
+              </div>
+              
+              <!-- Order summary (now below chart) -->
+              <div class="order-summary" id="order-summary" aria-live="polite">
+                <h3>Order Summary</h3>
+                <div class="summary-details">
+                  <div class="detail-row">
+                    <span>Order Type:</span>
+                    <span id="summary-type">-</span>
+                  </div>
+                  <div class="detail-row">
+                    <span>Asset:</span>
+                    <span id="summary-asset">-</span>
+                  </div>
+                  <div class="detail-row">
+                    <span>Amount:</span>
+                    <span id="summary-amount">-</span>
+                  </div>
+                  <div class="detail-row">
+                    <span>Estimated Quantity:</span>
+                    <span id="summary-quantity">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Trade form -->
+            <div class="trade-form" aria-label="Trade form">
+              <!-- Context header -->
+              <div class="trade-context">
+                <div class="asset-identity">
+                  <div class="asset-avatar" id="trade-asset-avatar" aria-hidden="true">₿</div>
+                  <div class="asset-meta">
+                    <div class="asset-line">
+                      <strong id="asset-name-label">Select an asset</strong>
+                      <span class="asset-symbol" id="asset-symbol-label"></span>
+                    </div>
+                    <div class="asset-price-line">
+                      <span>Live price:</span>
+                      <strong id="current-price">$0.00</strong>
+                      <span id="asset-24h-chip" class="asset-chip">0.00%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="side-toggle">
+                  <div class="toggle-buttons" role="group" aria-label="Buy or Sell">
+                    <button class="toggle-btn active" data-value="buy">Buy</button>
+                    <button class="toggle-btn" data-value="sell">Sell</button>
+                    <input type="hidden" id="trade-type" value="buy" />
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Asset select -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="trade-asset">Crypto Asset</label>
+                  <div class="select-wrapper">
+                    <select id="trade-asset" aria-label="Select asset"></select>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                  </div>
+                  <div class="inline-hints">
+                    <span class="hint" id="user-holdings-hint">Holdings: —</span>
+                    <span class="hint" id="user-balance-hint">Cash: <strong id="balance-inline">$10,000.00</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Amount controls -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="trade-amount">Amount (USD)</label>
+                  <div class="input-with-controls">
+                    <input type="number" id="trade-amount" min="1" step="0.01" value="100" inputmode="decimal" />
+                    <div class="quick-chips" role="group" aria-label="Quick amount">
+                      <button type="button" class="chip" data-chip="0.25">25%</button>
+                      <button type="button" class="chip" data-chip="0.50">50%</button>
+                      <button type="button" class="chip" data-chip="0.75">75%</button>
+                      <button type="button" class="chip" data-chip="1.00">Max</button>
+                    </div>
+                  </div>
+                  <div class="amount-slider">
+                    <input type="range" id="amount-slider" min="1" max="10000" value="100" step="1" />
+                    <div class="slider-labels">
+                      <span>$1</span>
+                      <span>$10,000</span>
+                    </div>
+                  </div>
+                  <div class="help-row">
+                    <span class="help-item">
+                      Est. qty: <strong id="quantity-display">0.00</strong>
+                    </span>
+                    <span class="help-item">
+                      Est. fee: <strong id="fee-display">$0.00</strong>
+                      <span class="info-tip" title="This simulator does not charge fees.">i</span>
+                    </span>
+                    <span class="help-item">
+                      Slippage: <strong>0.00%</strong>
+                      <span class="info-tip" title="Market orders may execute slightly above or below the last price.">i</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTA -->
+              <button id="execute-trade" class="primary-btn cta-primary">Preview Buy Order</button>
+
+              <!-- Inline guidance -->
+              <div class="trade-hints">
+                <div class="hint-row">
+                  <i class="fa-regular fa-lightbulb"></i>
+                  Use the % chips to size your order quickly based on cash or holdings.
+                </div>
+                <div class="hint-row">
+                  <i class="fa-regular fa-circle-question"></i>
+                  Preview shows order details before you confirm.
+                </div>
+              </div>
+            </div>
+          </div> <!-- trade-form-container -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trade Confirmation Modal -->
+  <div class="modal" id="trade-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content" tabindex="-1">
+      <span class="close-modal" role="button" aria-label="Close">&times;</span>
+      <div class="modal-header">
+        <h3 id="modal-title">Order Confirmation</h3>
+        <div class="order-type-badge" id="modal-order-type" aria-hidden="true">BUY</div>
+      </div>
+      <div id="modal-content"></div>
+      <div class="modal-actions">
+        <button id="cancel-trade" class="secondary-btn">Cancel</button>
+        <button id="confirm-trade" class="primary-btn">Confirm Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div class="notification" id="notification" role="status" aria-live="polite">
+    <div class="notification-content">
+      <i class="fas fa-check-circle"></i>
+      <span id="notification-message">Trade executed successfully!</span>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/build/index.umd.min.js"></script>
+<script src="/src/private/components/paperTrading/crypto/cryptoPaperTradingSimulator.js"></script>
+<script src="/src/private/components/paperTrading/crypto/cryptoChartModule.js"></script>
+<script src="/src/private/components/app.js"></script>
+
+</body>
+</html>
