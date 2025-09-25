@@ -1,318 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>FiscalWiser-Dashboard</title>
-   <!-- Font Awesome CSS -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css ">
-   
-   <!-- Charts.js -->
-<!-- Charts.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js "></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.1/dist/chartjs-plugin-annotation.min.js "></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js "></script>
-
-
-   <!-- dashboard styles -->
-  <link rel="stylesheet" href="/src/private/components/dashboard /dashboard-styles.css">
-   <!-- Navbar styles -->
- <link rel="stylesheet" href="/src/private/components/navBar-styles.css">
-   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiscalWiser Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-   <!-- Main Dashboard Container -->
-   <div class="financial-planning-dashboard">
-    
-    <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar__container">
-        <!-- Logo -->
-        <a href="#" id="navbar__logo">
-            <i class="fas fa-gem"></i> Fiscal Wiser
-        </a>
-
-        <!-- Mobile Menu Toggle -->
-        <div class="navbar__toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+    <nav class="navbar">
+        <a href="#" id="logo">Fiscal Wiser</a>
+        <div class="nav-menu">
+            <a href="#">Home</a>
+            <a href="transactions.html">Transactions</a>
+            <a href="retirement.html">Retirement</a>
+            <a href="trading.html">Paper Trading</a>
         </div>
+    </nav>
 
-        <!-- Navbar Menu -->
-        <ul class="navbar__menu">
-            <li class="navbar__item">
-                <a href="#" class="navbar__links">Home</a>
+    <div class="dashboard">
+        <section class="overview">
+            <h2>Financial Overview</h2>
+            
+            <div class="metrics">
+                <div class="metric-card">
+                    <h3>Monthly Income</h3>
+                    <div class="value" id="monthly-income">$0</div>
+                </div>
                 
-            </li>
-            <li class="navbar__item">
-                <a href="/src/private/components/transactions /incomeExpenseTracking.html" class="navbar__links">Transactions</a>
-            </li>
-            <li class="navbar__item dropdown">
-                <a href="/src/private/components/retirement/Overview /retirementOverview.html" class="navbar__links financial-planning-main">Retirement
-                     <i class="fas fa-caret-down"></i></a>
-
-                <!-- Dropdown Menu -->
-                <ul class="dropdown-menu">
-                    <li><a href="/src/private/components/retirement/calculator /retirementCalculator.html">Retirement Calculator</a></li>
-                </ul>
-            </li>
-            <li class="navbar__item dropdown">
-                <a href="/src/private/components/paperTrading/stocks/stock-ticker.html" class="navbar__links">Paper Trading
-                     <i class="fas fa-caret-down"></i></a>
-                <!-- Dropdown Menu -->
-                <ul class="dropdown-menu">
-                    <li><a href="/src/private/components/paperTrading/crypto/crypto_paper_trading_simulator.html">Crypto</a></li>
-                    <li><a href="/src/private/components/paperTrading/stocks/stock-ticker.html">Stocks</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-</nav>
-<!-- End of Navbar -->
-
-<!-- Dashboard Content -->
- <!-- Financial Overview section -->
-<div class="financial-planning-container">
-    <main class="fp-main-content-fullwidth">
-      <section class="fp-content-section active" id="overview">
-        <div class="fp-section-header">
-          <h2 class="fp-section-title">Financial Overview</h2>
-          <div class="fp-section-actions">
-          </div>
-        </div>
-        <p class="fp-section-description">Your complete financial overview with key metrics and performance indicators.</p>
-  
-        <!-- Metrics Grid for financial overview section -->
-        <div class="fp-metrics-grid">
-          <div class="fp-metric-card income-card">
-            <div class="fp-card-header">
-              <h3 class="fp-card-title">Monthly Income</h3>
-              <span class="fp-card-trend trend-positive" id="income-trend">+0%</span>
+                <div class="metric-card">
+                    <h3>Monthly Expenses</h3>
+                    <div class="value" id="monthly-expense">$0</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Savings Rate</h3>
+                    <div class="value" id="savings-rate">0%</div>
+                </div>
             </div>
-            <!--Monthly Income value containers-->
-            <div class="fp-card-value" id="monthly-income">$0</div>
-            <div class="fp-card-details" id="income-comparison">vs $0 last month</div>
-          </div>
-          
-          <div class="fp-metric-card expense-card">
-            <div class="fp-card-header">
-              <h3 class="fp-card-title">Monthly Expenses</h3>
-              <span class="fp-card-trend trend-negative" id="expense-trend">-0%</span>
-            </div>
-            <!-- Monthly Expenses value containers-->
-            <div class="fp-card-value" id="monthly-expense">$0</div>
-            <div class="fp-card-details" id="expense-comparison">vs $0 last month</div>
-          </div>
-          
-          <div class="fp-metric-card savings-card">
-            <div class="fp-card-header">
-              <h3 class="fp-card-title">Savings Rate</h3>
-              <span class="fp-card-trend trend-positive" id="savings-trend">+0%</span>
-            </div>
-            <!-- Savings rating comparisons classes-->
-            <div class="fp-card-value" id="savings-rate">0%</div>
-            <div class="fp-card-details" id="savings-comparison">vs 0% last month</div>
-          </div>
-        </div>
-        
-        <!-- Container for cash flow analysis-->
-        <div class="cashflow-chart-container">
 
-          <!-- -->
-          <div class="chart-header">
-            <!---->
-            <h3 class="chart-title">Cash Flow Analysis</h3>
-            <!-- -->
-            <div class="chart-period-controls">
-              <button class="period-btn active" data-period="1m">1M</button>
-              <button class="period-btn" data-period="6m">6M</button>
-              <button class="period-btn" data-period="1y">1Y</button>
-              <button class="period-btn" data-period="all">ALL</button>
+            <div class="chart-container">
+                <h3>Cash Flow Analysis</h3>
+                <canvas id="cashFlowChart"></canvas>
             </div>
-          </div>
 
-          <!---->
-          <div class="chart-wrapper">
-            <canvas id="cashFlowChart" width="800" height="400"></canvas>
-          </div>
-        </div>
-        <!-- End of container for chart flow analysis -->
-
-
-        <div class="fp-metrics-grid">
- 
-          <!-- Dashboar Stock portfolio value metrics card -->
-          <div class="fp-metric-card portfolio-value-card">
-            <div class="fp-card-header">
-              <h3 class="fp-card-title">Stocks Portfolio Value</h3>
-              <span class="fp-card-trend trend-positive" id="portfolio-trend">
-                <span class="trend-arrow">↗</span>
-                <span class="percentage-value percentage-positive">5.2%</span>
-              </span>
+            <div class="metrics">
+                <div class="metric-card">
+                    <h3>Stocks Portfolio</h3>
+                    <div class="value" id="portfolio-value">$0.00</div>
+                    <canvas id="stockChart"></canvas>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Crypto Portfolio</h3>
+                    <div class="value" id="crypto-value">$0.00</div>
+                    <canvas id="cryptoChart"></canvas>
+                </div>
             </div>
+        </section>
+
+        <section class="budget">
+            <h2>Budget Tracker</h2>
+            <button id="createBudget">Create Budget</button>
             
-            <div class="fp-card-value" id="portfolio-current-value">$0.00</div>
-            
-            <!-- Mini Chart Container -->
-            <div class="portfolio-mini-chart-container">
-              <canvas id="portfolioMiniChart" height="60"></canvas>
+            <div class="budget-summary">
+                <div class="summary-card">
+                    <h4>Total Budget</h4>
+                    <p id="total-budget">$0.00</p>
+                </div>
+                <div class="summary-card">
+                    <h4>Total Spent</h4>
+                    <p id="total-spent">$0.00</p>
+                </div>
             </div>
-            
-            <!-- Portfolio Details-->
-            <div class="fp-card-details">
-              <span id="portfolio-equity">Equity: $0.00</span> | 
-              <span id="portfolio-cash">Cash: $0.00</span>
-            </div>
-          </div>
-          <!--  End of Stock Portfolio Chart-->
-
-         <!-- Cryto portfolio metrics card -->
-<div class="fp-metric-card crypto-portfolio-card">
-  <div class="fp-card-header">
-      <h3 class="fp-card-title">Crypto Portfolio</h3>
-      <span class="fp-card-trend" id="portfolio-trend-indicator">Loading...</span>
-  </div>
-  <!-- Mini Chart Container -->
-  <div class="mini-chart-container">
-      <canvas id="portfolio-mini-chart" height="40"></canvas>
-  </div>
-  
-  <!-- Portfolio Details -->
-  <div class="fp-card-value">
-      <span id="portfolio-profit-loss">$0.00 (0.00%)</span>
-  </div>
-</div>
-<!-- End of Crypto Portfolio Card -->
- 
-      </section>
-      <!-- End of Financial Overview Section -->
-    </main>
-  </div>
-
- 
-  
-<!-- End of Financial Overview Section -->
-
-
-<!-- Budget Planning Section -->
-<section class="fp-content-section" id="budget">
-    <div class="fp-section-header">
-        <h2 class="fp-section-title">Budget Tracker</h2>
-        <div class="fp-section-actions">
-            <button class="fp-btn primary" id="createBudgetBtn">
-                <i class="fas fa-plus"></i> Create Budget
-            </button>
-            <button class="fp-btn secondary" id="refreshBudgetsBtn">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-        </div>
-    </div>
-    <p class="fp-section-description">Track your spending against your monthly budgets.</p>
-    
-    <!-- Budget Summary Cards -->
-    <div class="fp-budget-summary">
-        <div class="fp-budget-summary-card">
-            <div class="fp-summary-icon">
-                <i class="fas fa-wallet"></i>
-            </div>
-            <!-- -->
-            <div class="fp-summary-content">
-                <h3>Total Budget</h3>
-                <p id="totalBudgetAmount">$0.00</p>
-            </div>
-        </div>
-        <!-- -->
-        <div class="fp-budget-summary-card">
-            <div class="fp-summary-icon">
-                <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <!-- -->
-            <div class="fp-summary-content">
-                <h3>Total Spent</h3>
-                <p id="totalSpentAmount">$0.00</p>
-            </div>
-        </div>
-        <!-- -->
-        <div class="fp-budget-summary-card">
-            <div class="fp-summary-icon">
-                <i class="fas fa-percentage"></i>
-            </div>
-            <!---->
-            <div class="fp-summary-content">
-                <h3>Utilization</h3>
-                <p id="totalUtilization">0%</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Budget Categories -->
-    <div class="fp-budget-categories" id="budgetCategories">
-        <div class="fp-budget-empty-state">
-            <i class="fas fa-chart-pie"></i>
-            <p>No budgets set up for this month</p>
-            <button class="fp-btn primary" id="setupBudgetsBtn">Set Up Budgets</button>
-        </div>
+        </section>
     </div>
 
-  <!-- Budget Modal Structure -->
-<div class="fp-budget-modal" id="budgetModal">
-    <div class="fp-budget-modal-backdrop"></div>
-    <div class="fp-budget-modal-content">
-        <span class="fp-budget-modal-close">&times;</span>
-        <h3>Create New Budget</h3>
-        <form id="budgetForm">
-            <div class="fp-budget-form-group">
-                <label for="budgetCategory">Category</label>
-                <select class="fp-budget-form-control" id="budgetCategory" required>
-                    <option value="">Select a category</option>
-                    <!-- Options will be populated by JavaScript -->
-                </select>
-                <!-- -->
-            </div>
-            <div class="fp-budget-form-group">
-                <label for="budgetAmount">Amount ($)</label>
-                <input type="number" class="fp-budget-form-control" id="budgetAmount" min="0" step="0.01" required>
-            </div>
-            <!-- -->
-            <div class="fp-budget-form-group">
-                <label for="budgetPeriod">Budget Period</label>
-                <select class="fp-budget-form-control" id="budgetPeriod" required>
-                    <option value="monthly">Monthly</option>
-                    <option value="weekly">Weekly</option>
-                </select>
-            </div>
-            <!---->
-            <div class="fp-budget-form-actions">
-                <button type="button" class="fp-btn secondary" id="cancelBudgetBtn">Cancel</button>
-                <button type="submit" class="fp-btn primary">Save Budget</button>
-            </div>
-        </form>
-    </div>
-</div>  
-</section>
-           </main>
-       </div>
-   </div>
-
-
-   <!-- JavaScript Files -->
-    <!--  Main application logic for navabar-->
-   <script src = "/src/private/components/app.js"></script>
-   
-<!--Script for the cash flow analysis-->
-   <script src = "/src/private/components/dashboard /dashboardCashFlowAnalysis.js"></script>
-
-    <!--Script for the budget tracker-->
-   <script src = "/src/private/components/dashboard /dashboardBudget.js"></script>
-
-   <!--Script for stock portfolip fp-metrics card-->
-
-   <script src = "/src/private/components/dashboard /dashboardStockPortfolio.js"></script>
-
-   <!-- Script for crypto portfolio fp-metrics card -->
-
-   <script src = "/src/private/components/dashboard /dashboardCryptoPortfolio.js"></script>
+    <script src="dashboard.js"></script>
+</body>
 </html>
