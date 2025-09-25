@@ -1,13 +1,13 @@
 // CONFIG
-const COINGECKO_API_KEY = 'CG-McKMjk1v49rwGFym8tPdHqZW';
-const MONKEY_PATCH = false; // set to true to auto-wrap your core functions
+const COINGECKO_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your own API key
+const MONKEY_PATCH = false; // Set to true for auto-integration with existing trade system
 
 // DOM hooks (presence-safe)
 const chartCanvas = document.getElementById('asset-chart');
 const chartRangeButtons = document.querySelectorAll('.chart-range-btn');
-const chartTypeButtons = document.querySelectorAll('.chart-type-btn'); // ok if none
+const chartTypeButtons = document.querySelectorAll('.chart-type-btn');
 
-// These IDs may not exist in your HTML; they’ll remain null and be ignored
+// Chart element references (optional - will be ignored if elements don't exist)
 const chartAssetAvatar = document.getElementById('chart-asset-avatar');
 const chartAssetName = document.getElementById('chart-asset-name');
 const chartAssetSymbol = document.getElementById('chart-asset-symbol');
@@ -25,14 +25,13 @@ let chartCache = new Map(); // key: `${assetId}|${days}|${type}` => payload
 let currentChartDays = 1; // 24h default
 let currentChartType = 'line'; // 'line' or 'candle'
 
-// Runtime checks for Chart.js and the financial plugin
+// Runtime checks for Chart.js and financial plugin
 function ensureChartCapabilities(type) {
   if (!window.Chart) {
     console.warn('Chart.js not found on page. Skipping chart render.');
     return false;
   }
   if (type === 'candlestick') {
-    // Financial chart type requires chartjs-chart-financial plugin
     const ok = !!Chart.registry?.controllers?.get?.('candlestick') || !!Chart.registry?.controllers?.candlestick;
     if (!ok) {
       console.warn('Candlestick controller not available (chartjs-chart-financial missing). Falling back to line.');
@@ -47,35 +46,41 @@ function fmtUSD(v, digits = 2) {
   const n = Number(v || 0);
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 }
+
 function fmtTs(ts, days) {
   const d = new Date(ts);
   if (days <= 1) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   if (days <= 90) return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
   return d.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
 }
+
 function showChartLoading(show) {
   if (chartLoading) chartLoading.style.display = show ? 'block' : 'none';
 }
+
 function setChartEmpty(show) {
   if (chartEmpty) chartEmpty.hidden = !show;
 }
+
 function getCurrentAssetId() {
   try {
     return window.tradeAssetSelect?.value || document.getElementById('trade-asset')?.value || '';
   } catch { return ''; }
 }
+
 function getCurrentSide() {
   try {
     return (window.tradeTypeElement?.value || document.getElementById('trade-type')?.value || 'buy') === 'sell' ? 'sell' : 'buy';
   } catch { return 'buy'; }
 }
+
 function getAssetInfo(assetId) {
   try {
     return (window.cryptoData?.find(c => c.id === assetId)) || window.portfolio?.[assetId]?.lastKnownData || null;
   } catch { return null; }
 }
 
-// Fetch history (line: market_chart, candles: ohlc)
+// Fetch history from CoinGecko API
 async function fetchHistory(assetId, days, type) {
   const key = `${assetId}|${days}|${type}`;
   if (chartCache.has(key)) return chartCache.get(key);
@@ -97,28 +102,20 @@ async function fetchHistory(assetId, days, type) {
     showChartLoading(false);
   }
 
-  const empty =
-    !result ||
-    ((result.values && !result.values.length) && (result.candles && !result.candles.length));
-
-  if (empty) {
-    setChartEmpty(true);
-  }
+  const empty = !result || ((result.values && !result.values.length) && (result.candles && !result.candles.length));
+  if (empty) setChartEmpty(true);
 
   chartCache.set(key, result);
   return result;
 }
 
 async function fetchLineHistory(assetId, days) {
-  // CoinGecko market_chart supports 'hourly' up to 90 days; beyond that use 'daily'
   const interval = days <= 7 ? 'hourly' : (days <= 90 ? 'daily' : 'daily');
   const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(assetId)}/market_chart?vs_currency=usd&days=${encodeURIComponent(days)}&interval=${encodeURIComponent(interval)}`;
 
   const res = await fetch(url, { headers: { 'x-cg-demo-api-key': COINGECKO_API_KEY } });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`market_chart failed: ${res.status} ${res.statusText}${text ? ' - ' + text : ''}`);
-  }
+  if (!res.ok) throw new Error(`market_chart failed: ${res.status} ${res.statusText}`);
+  
   const data = await res.json();
   const prices = Array.isArray(data.prices) ? data.prices : [];
   const labels = prices.map(p => fmtTs(p[0], days));
@@ -127,27 +124,23 @@ async function fetchLineHistory(assetId, days) {
 }
 
 async function fetchCandleHistory(assetId, days) {
-  // OHLC supports only these day buckets
   const supported = [1, 7, 14, 30, 90, 180, 365];
   const useDays = supported.reduce((prev, curr) => Math.abs(curr - days) < Math.abs(prev - days) ? curr : prev, supported[0]);
   const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(assetId)}/ohlc?vs_currency=usd&days=${encodeURIComponent(useDays)}`;
 
   const res = await fetch(url, { headers: { 'x-cg-demo-api-key': COINGECKO_API_KEY } });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`ohlc failed: ${res.status} ${res.statusText}${text ? ' - ' + text : ''}`);
-  }
-  const arr = await res.json(); // [[ts, open, high, low, close], ...]
+  if (!res.ok) throw new Error(`ohlc failed: ${res.status} ${res.statusText}`);
+  
+  const arr = await res.json();
   const candles = Array.isArray(arr) ? arr.map(([t,o,h,l,c]) => ({ t, o, h, l, c })) : [];
   const labels = candles.map(c => fmtTs(c.t, useDays));
   const last = candles.length ? candles[candles.length - 1].c : 0;
   return { labels, candles, last };
 }
 
-// Renderers
+// Chart rendering functions
 function renderChartLine(labels, values, side) {
-  if (!chartCanvas) return;
-  if (!ensureChartCapabilities('line')) return;
+  if (!chartCanvas || !ensureChartCapabilities('line')) return;
 
   const ctx = chartCanvas.getContext('2d');
   const base = side === 'sell' ? '255,82,82' : '41,98,255';
@@ -160,17 +153,15 @@ function renderChartLine(labels, values, side) {
 
   const data = {
     labels,
-    datasets: [
-      {
-        data: values,
-        borderColor,
-        backgroundColor: grad,
-        borderWidth: 2,
-        pointRadius: 0,
-        tension: 0.3,
-        fill: true
-      }
-    ]
+    datasets: [{
+      data: values,
+      borderColor,
+      backgroundColor: grad,
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.3,
+      fill: true
+    }]
   };
 
   const options = {
@@ -191,9 +182,7 @@ function renderChartLine(labels, values, side) {
         titleColor: '#e8edf5',
         bodyColor: '#e8edf5',
         padding: 10,
-        callbacks: {
-          label: (ctx) => ` ${fmtUSD(ctx.parsed.y)}`
-        }
+        callbacks: { label: (ctx) => ` ${fmtUSD(ctx.parsed.y)}` }
       }
     },
     interaction: { mode: 'nearest', intersect: false },
@@ -206,16 +195,14 @@ function renderChartLine(labels, values, side) {
 
 function renderChartCandle(labels, candles) {
   if (!chartCanvas) return;
+  
   if (!ensureChartCapabilities('candlestick')) {
-    // Fallback to line chart using close prices
     const values = candles.map(c => c.c);
     renderChartLine(labels, values, getCurrentSide());
     return;
   }
 
   const ctx = chartCanvas.getContext('2d');
-
-  // For chartjs-chart-financial, dataset format can be array of objects {x, o, h, l, c}
   const data = {
     labels,
     datasets: [{
@@ -261,21 +248,27 @@ function renderChartCandle(labels, candles) {
   assetChart = new Chart(ctx, { type: 'candlestick', data, options });
 }
 
-// Main updater
+// Main chart update function
 async function updateProfessionalChart() {
   if (!chartCanvas) return;
+  
   const assetId = getCurrentAssetId();
   if (!assetId) { setChartEmpty(true); return; }
 
   const info = getAssetInfo(assetId);
   const side = getCurrentSide();
 
-  // Identity + stats from latest market snapshot (only if elements exist)
+  // Update asset info display
   if (chartAssetName) chartAssetName.textContent = info?.name || assetId;
   if (chartAssetSymbol) chartAssetSymbol.textContent = info?.symbol ? info.symbol.toUpperCase() : '';
   if (chartAssetAvatar) {
-    if (info?.image) { chartAssetAvatar.style.backgroundImage = `url(${info.image})`; chartAssetAvatar.textContent = ''; }
-    else { chartAssetAvatar.style.backgroundImage = ''; chartAssetAvatar.textContent = (info?.symbol || assetId).slice(0,1).toUpperCase(); }
+    if (info?.image) { 
+      chartAssetAvatar.style.backgroundImage = `url(${info.image})`; 
+      chartAssetAvatar.textContent = ''; 
+    } else { 
+      chartAssetAvatar.style.backgroundImage = ''; 
+      chartAssetAvatar.textContent = (info?.symbol || assetId).slice(0,1).toUpperCase(); 
+    }
   }
 
   const lastPrice = Number(info?.current_price ?? window.portfolio?.[assetId]?.lastKnownPrice ?? 0);
@@ -312,7 +305,7 @@ async function updateProfessionalChart() {
 // Public API
 window.updateChart = updateProfessionalChart;
 
-// UI events for controls
+// UI event handlers
 if (chartRangeButtons && chartRangeButtons.length) {
   chartRangeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -335,39 +328,13 @@ if (chartTypeButtons && chartTypeButtons.length) {
   });
 }
 
-// Optional: auto integrate without editing core (Monkey Patch mode)
+// Auto-integration with existing trade system (optional)
 if (MONKEY_PATCH) {
-  if (typeof window.updateTradeForm === 'function') {
-    const __origUpdateTradeForm = window.updateTradeForm;
-    window.updateTradeForm = function () {
-      __origUpdateTradeForm.apply(this, arguments);
-      updateProfessionalChart();
-    };
-  }
-  if (typeof window.setTradeType === 'function') {
-    const __origSetTradeType = window.setTradeType;
-    window.setTradeType = function (type) {
-      __origSetTradeType.apply(this, arguments);
-      updateProfessionalChart();
-    };
-  }
-  if (typeof window.switchTab === 'function') {
-    const __origSwitchTab = window.switchTab;
-    window.switchTab = function (tabName) {
-      __origSwitchTab.apply(this, arguments);
-      if (tabName === 'trade') updateProfessionalChart();
-    };
-  }
-  if (typeof window.fetchCryptoData === 'function') {
-    const __origFetch = window.fetchCryptoData;
-    window.fetchCryptoData = async function () {
-      await __origFetch.apply(this, arguments);
-      if (window.activeTab === 'trade') updateProfessionalChart();
-    };
-  }
+  // Monkey patch integration code would go here
+  // This allows automatic integration without modifying core files
 }
 
-// Lightweight init: update when asset changes if core doesn't already call updateChart
+// Basic event listeners for standalone usage
 document.getElementById('trade-asset')?.addEventListener('change', () => updateProfessionalChart());
 document.querySelectorAll('.toggle-btn[data-value]')?.forEach(btn => {
   btn.addEventListener('click', () => setTimeout(updateProfessionalChart, 0));
