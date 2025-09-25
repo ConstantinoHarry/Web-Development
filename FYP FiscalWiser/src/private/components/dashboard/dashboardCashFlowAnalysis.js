@@ -17,160 +17,84 @@
 * Author: Constantino Harr
 */
 
-// 1. Data Retrieval and Processing Functions
-
-// Retrieve all transactions from localStorage
+// Get transactions from localStorage
 function getTransactions() {
-    return JSON.parse(localStorage.getItem('transactions')) || []; // Return an empty array if no transactions exist
+    return JSON.parse(localStorage.getItem('transactions')) || [];
 }
 
-// Get the current month and year in "YYYY-MM" format
-function getCurrentMonthYear() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // Format as "YYYY-MM"
-}
-
-// Get the previous month and year in "YYYY-MM" format
-function getPreviousMonthYear() {
-    const now = new Date();
-    now.setMonth(now.getMonth() - 1); // Move to the previous month
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
-// Calculate monthly metrics (income, expenses, savings, and savings ratio) from transactions
+// Calculate monthly income, expenses, and savings
 function calculateMonthlyMetrics(transactions) {
-    const monthlyData = {}; // Object to store metrics for each month
+    const monthlyData = {};
 
     transactions.forEach(transaction => {
         const date = new Date(transaction.date);
-        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // Format as "YYYY-MM"
+        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-        // Initialize the month if not already present
         if (!monthlyData[monthYear]) {
-            monthlyData[monthYear] = {
-                income: 0,
-                expenses: 0,
-                transactions: []
-            };
+            monthlyData[monthYear] = { income: 0, expenses: 0 };
         }
 
-        // Add transaction amount to income or expenses
         if (transaction.type === 'income') {
             monthlyData[monthYear].income += transaction.amount;
         } else {
             monthlyData[monthYear].expenses += transaction.amount;
         }
-
-        // Store the transaction in the month's data
-        monthlyData[monthYear].transactions.push(transaction);
     });
 
-    // Calculate savings and savings ratio for each month
+    // Calculate savings for each month
     Object.keys(monthlyData).forEach(month => {
         const data = monthlyData[month];
-        data.savings = data.income - data.expenses; // Calculate savings
-        data.savingsRatio = data.income > 0 ? (data.savings / data.income) * 100 : 0; // Calculate savings ratio
+        data.savings = data.income - data.expenses;
+        data.savingsRatio = data.income > 0 ? (data.savings / data.income) * 100 : 0;
     });
 
     return monthlyData;
 }
 
-// 2. UI Update Functions
-
-// Update the metric cards (income, expenses, savings) in the dashboard
+// Update the dashboard metrics
 function updateMetricCards(monthlyData) {
-    const currentMonth = getCurrentMonthYear(); // Get the current month
-    const previousMonth = getPreviousMonthYear(); // Get the previous month
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Get previous month
+    const prev = new Date(now);
+    prev.setMonth(prev.getMonth() - 1);
+    const previousMonth = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`;
 
-    // Get data for the current and previous months
     const current = monthlyData[currentMonth] || { income: 0, expenses: 0, savings: 0, savingsRatio: 0 };
     const previous = monthlyData[previousMonth] || { income: 0, expenses: 0, savings: 0, savingsRatio: 0 };
 
-    // Update Income Card
+    // Update income
     document.getElementById('monthly-income').textContent = `$${current.income.toFixed(2)}`;
-    document.getElementById('income-comparison').textContent = `vs $${previous.income.toFixed(2)} last month`;
-
-    const incomeChange = previous.income ? ((current.income - previous.income) / previous.income * 100) : 0;
-    const incomeTrend = document.getElementById('income-trend');
-    incomeTrend.textContent = `${incomeChange >= 0 ? '+' : ''}${incomeChange.toFixed(2)}%`;
-    incomeTrend.className = `fp-card-trend ${incomeChange >= 0 ? 'trend-positive' : 'trend-negative'}`;
-
-    // Update Expense Card
+    
+    // Update expenses
     document.getElementById('monthly-expense').textContent = `$${current.expenses.toFixed(2)}`;
-    document.getElementById('expense-comparison').textContent = `vs $${previous.expenses.toFixed(2)} last month`;
-
-    const expenseChange = previous.expenses ? ((current.expenses - previous.expenses) / previous.expenses * 100) : 0;
-    const expenseTrend = document.getElementById('expense-trend');
-    expenseTrend.textContent = `${expenseChange >= 0 ? '+' : ''}${expenseChange.toFixed(2)}%`;
-    expenseTrend.className = `fp-card-trend ${expenseChange >= 0 ? 'trend-negative' : 'trend-positive'}`;
-
-    // Update Savings Card
+    
+    // Update savings rate
     document.getElementById('savings-rate').textContent = `${current.savingsRatio.toFixed(2)}%`;
-    document.getElementById('savings-comparison').textContent = `vs ${previous.savingsRatio.toFixed(2)}% last month`;
-
-    const savingsChange = current.savingsRatio - previous.savingsRatio;
-    const savingsTrend = document.getElementById('savings-trend');
-    savingsTrend.textContent = `${savingsChange >= 0 ? '+' : ''}${savingsChange.toFixed(2)}%`;
-    savingsTrend.className = `fp-card-trend ${savingsChange >= 0 ? 'trend-positive' : 'trend-negative'}`;
 }
 
-// 3. Chart Implementation (Fixed Version)
-
-// Global variable to store the cash flow chart instance
+// Render the cash flow chart
 let cashFlowChart = null;
 
-// Render the cash flow chart based on the selected period
-function renderCashFlowChart(monthlyData, period = '1m') {
+function renderCashFlowChart(monthlyData) {
     const ctx = document.getElementById('cashFlowChart').getContext('2d');
-
-    // Sort months chronologically
-    const sortedMonths = Object.keys(monthlyData).sort();
-
-    // Filter months based on the selected period
-    let displayMonths = sortedMonths;
-    const now = new Date();
-    const currentMonth = getCurrentMonthYear();
-
-    if (period === '1m') {
-        displayMonths = [currentMonth]; // Show only the current month
-    } else if (period === '6m') {
-        const sixMonthsAgo = new Date(now);
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-        displayMonths = sortedMonths.filter(m => {
-            const [year, month] = m.split('-').map(Number);
-            const compareDate = new Date(sixMonthsAgo);
-            compareDate.setMonth(compareDate.getMonth() + 1); // Include the starting month
-            return new Date(year, month - 1) >= new Date(compareDate.getFullYear(), compareDate.getMonth(), 1);
-        });
-    } else if (period === '1y') {
-        const oneYearAgo = new Date(now);
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-        oneYearAgo.setMonth(oneYearAgo.getMonth() + 1); // Include the starting month
-        displayMonths = sortedMonths.filter(m => {
-            const [year, month] = m.split('-').map(Number);
-            return new Date(year, month - 1) >= new Date(oneYearAgo.getFullYear(), oneYearAgo.getMonth(), 1);
-        });
-    } else if (period === 'all') {
-        // Keep all months
-        displayMonths = sortedMonths;
-    }
-
-    // Prepare chart data
-    const labels = displayMonths.map(m => {
+    
+    // Sort months and get last 6 months
+    const sortedMonths = Object.keys(monthlyData).sort().slice(-6);
+    
+    const labels = sortedMonths.map(m => {
         const [year, month] = m.split('-');
         return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     });
 
-    const incomeData = displayMonths.map(m => monthlyData[m]?.income || 0);
-    const expenseData = displayMonths.map(m => monthlyData[m]?.expenses || 0);
-    const savingsData = displayMonths.map(m => (monthlyData[m]?.income || 0) - (monthlyData[m]?.expenses || 0));
+    const incomeData = sortedMonths.map(m => monthlyData[m]?.income || 0);
+    const expenseData = sortedMonths.map(m => monthlyData[m]?.expenses || 0);
 
-    // Destroy the previous chart if it exists
     if (cashFlowChart) {
         cashFlowChart.destroy();
     }
 
-    // Create a new chart
     cashFlowChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -179,109 +103,31 @@ function renderCashFlowChart(monthlyData, period = '1m') {
                 {
                     label: 'Income',
                     data: incomeData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
                 },
                 {
                     label: 'Expenses',
                     data: expenseData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Savings',
-                    data: savingsData,
-                    type: 'line',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                    fill: true
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
                 }
             ]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: 2000, // Animation duration in milliseconds
-                easing: 'easeOutQuart' // Easing function for smooth animation
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Monthly Cash Flow Analysis',
-                    font: {
-                        size: 16
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: $${context.raw.toFixed(2)}`;
-                        }
-                    }
-                },
-                legend: {
-                    position: 'top',
-                }
-            },
             scales: {
                 y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value;
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
+                    beginAtZero: true
                 }
             }
         }
     });
 }
 
-// 4. Period Filter Controls
-
-// Set up event listeners for period filter buttons
-function setupPeriodControls(monthlyData) {
-    const periodButtons = document.querySelectorAll('.period-btn');
-
-    periodButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Update active state
-            periodButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-
-            // Re-render chart with new period
-            renderCashFlowChart(monthlyData, this.dataset.period);
-        });
-    });
-}
-
-// 5. Initialization
-
-// Initialize the dashboard when the DOM is fully loaded
+// Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
-    const transactions = getTransactions(); // Retrieve transactions from localStorage
-    const monthlyData = calculateMonthlyMetrics(transactions); // Calculate monthly metrics
-
-    updateMetricCards(monthlyData); // Update the metric cards in the UI
-    renderCashFlowChart(monthlyData); // Render the cash flow chart
-    setupPeriodControls(monthlyData); // Set up period filter controls
-
-    // Optional: Set up a listener for storage changes to update in real-time
-    window.addEventListener('storage', function() {
-        const updatedTransactions = getTransactions(); // Retrieve updated transactions
-        const updatedMonthlyData = calculateMonthlyMetrics(updatedTransactions); // Recalculate metrics
-        updateMetricCards(updatedMonthlyData); // Update the UI
-        renderCashFlowChart(updatedMonthlyData); // Re-render the chart
-    });
+    const transactions = getTransactions();
+    const monthlyData = calculateMonthlyMetrics(transactions);
+    
+    updateMetricCards(monthlyData);
+    renderCashFlowChart(monthlyData);
 });
-
